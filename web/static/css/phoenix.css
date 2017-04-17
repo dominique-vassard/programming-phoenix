@@ -35,6 +35,15 @@ form.link, form.button {
   background-size: 519px 71px;
 }
 
+.logo-rumble {
+  width: 72px;
+  height: 72px;
+  display: inline-block;
+  margin-top: 1em;
+  background-image: url("/images/rumble.png");
+  background-size: 72px 72px;
+}
+
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing {
