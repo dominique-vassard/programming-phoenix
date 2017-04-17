@@ -1,17 +1,29 @@
 defmodule Rumbl.Auth do
   import Plug.Conn
   import Comeonin.Bcrypt, only: [checkpw: 2, dummy_checkpw: 0]
+  import Phoenix.Controller
 
+  alias Rumbl.Router.Helpers
+
+  @doc """
+    Required plug function
+  """
   def init(opts) do
     Keyword.fetch!(opts, :repo)
   end
 
+  @doc """
+    Required plug function
+  """
   def call(conn, repo) do
     user_id = get_session conn, :user_id
     user = user_id && repo.get Rumbl.User, user_id
     assign conn, :current_user, user
   end
 
+  @doc """
+    login user
+  """
   def login(conn, user) do
     conn
     |> assign(:current_user, user)
@@ -19,6 +31,9 @@ defmodule Rumbl.Auth do
     |> configure_session(renew: true)
   end
 
+  @doc """
+    logout user
+  """
   def logout(conn) do
     configure_session conn, drop: true
   end
@@ -35,6 +50,20 @@ defmodule Rumbl.Auth do
       true ->
         dummy_checkpw()
         {:error, :not_found, conn}
+    end
+  end
+
+  @doc """
+    Check authentication
+  """
+  def authenticate_user(conn, _opts) do
+    if conn.assigns.current_user do
+      conn
+    else
+      conn
+      |> put_flash(:error, "You must be logged in to view this page")
+      |> redirect(to: Helpers.page_path(conn, :index))
+      |> halt()
     end
   end
 end
