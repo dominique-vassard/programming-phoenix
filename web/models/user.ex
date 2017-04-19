@@ -23,6 +23,7 @@ defmodule Rumbl.User do
     |> cast(params, @required_fields)
     |> validate_required(Enum.map @required_fields, &String.to_atom/1)
     |> validate_length(:username, min: 5, max: 20)
+    |> unique_constraint(:username)
   end
 
   @doc """
