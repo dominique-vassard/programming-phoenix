@@ -17,8 +17,15 @@ defmodule Rumbl.Auth do
   """
   def call(conn, repo) do
     user_id = get_session conn, :user_id
-    user = user_id && repo.get Rumbl.User, user_id
-    assign conn, :current_user, user
+    cond do
+      user = conn.assigns[:current_user] ->
+        conn
+      user = user_id && repo.get Rumbl.User, user_id ->
+        assign conn, :current_user, user
+      true ->
+        assign conn, :current_user, nil
+    end
+
   end
 
   @doc """
@@ -38,6 +45,9 @@ defmodule Rumbl.Auth do
     configure_session conn, drop: true
   end
 
+  @doc """
+    Login by username and pass
+  """
   def login_by_username_and_pass(conn, username, given_pass, opts) do
     repo = Keyword.fetch! opts, :repo
     user = repo.get_by Rumbl.User, username: username
